@@ -1,0 +1,142 @@
+Q.1 Write a program to simulate Linked file allocation method. Assume disk with n
+number of blocks. Give value of n as input. Randomly mark some block as allocated
+and accordingly maintain the list of free blocks Write menu driver program with menu
+options as mentioned below and implement each option. • Show Bit Vector • Create
+New File • Show Directory • Exit
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_BLOCKS 100
+int n; // Number of blocks
+int bitVector[MAX_BLOCKS]; // Bit vector for allocation
+int directory[MAX_BLOCKS]; // Directory to store file block allocations
+void showBitVector() {
+printf("Bit Vector (0=Free, 1=Allocated):\n");
+for (int i = 0; i < n; i++) {
+printf("%d ", bitVector[i]);
+}
+printf("\n");
+}
+void createNewFile() {
+int fileSize;
+printf("Enter the size of the new file (number of blocks): ");
+scanf("%d", &fileSize);
+int allocatedBlocks = 0;
+int fileBlocks[fileSize];
+for (int i = 0; i < n && allocatedBlocks < fileSize; i++) {
+if (bitVector[i] == 0) { // Free block found
+bitVector[i] = 1;
+fileBlocks[allocatedBlocks] = i;
+allocatedBlocks++;
+}
+}
+if (allocatedBlocks == fileSize) {
+printf("File created successfully with blocks: ");
+for (int i = 0; i < fileSize; i++) {
+printf("%d ", fileBlocks[i]);
+}
+printf("\n");
+} else {
+printf("Not enough free blocks to create the file.\n");
+}
+}
+void showDirectory() {
+printf("Directory (File Allocations):\n");
+for (int i = 0; i < n; i++) {
+if (bitVector[i] == 1) {
+printf("Block %d allocated\n", i);
+}
+}
+}
+int main() {
+int choice;
+printf("Enter the total number of blocks: ");
+scanf("%d", &n);
+// Initialize bit vector and directory
+for (int i = 0; i < n; i++) {
+bitVector[i] = 0; // 0 means free block
+directory[i] = -1; // No file allocated yet
+}
+do {
+printf("\nMenu:\n");
+printf("1. Show Bit Vector\n");
+printf("2. Create New File\n");
+printf("3. Show Directory\n");
+printf("4. Exit\n");
+printf("Enter your choice: ");
+scanf("%d", &choice);
+switch (choice) {
+case 1:
+showBitVector();
+break;
+case 2:
+createNewFile();
+break;
+case 3:
+showDirectory();
+break;
+case 4:
+printf("Exiting...\n");
+break;
+default:
+printf("Invalid choice. Please try again.\n");
+}
+} while (choice != 4);
+return 0;
+}
+Q.2 Write a simulation program for disk scheduling using C-SCAN algorithm. Accept
+total number of disk blocks, disk request string, and current head position from the user.
+Display the list of request in the order in which it is served. Also display the total number
+of head moments.. 80, 150, 60,135, 40, 35, 170 Starting Head Position: 70 Direction:
+Right
+#include <stdio.h>
+#include <stdlib.h>
+void sortRequests(int requests[], int n) {
+int temp;
+for (int i = 0; i < n-1; i++) {
+for (int j = i+1; j < n; j++) {
+if (requests[i] > requests[j]) {
+temp = requests[i];
+requests[i] = requests[j];
+requests[j] = temp;
+}
+}
+}
+}
+void cscan(int requests[], int n, int head, int diskSize, char direction) {
+int totalHeadMovements = 0;
+int index = 0;
+int servedRequests[n];
+sortRequests(requests, n);
+if (direction == 'R') {
+for (int i = 0; i < n; i++) {
+if (requests[i] >= head) {
+index = i;
+break;
+}
+}
+for (int i = index; i < n; i++) {
+servedRequests[i - index] = requests[i];
+}
+for (int i = 0; i < index; i++) {
+servedRequests[n - index + i] = requests[i];
+}
+totalHeadMovements += (diskSize - 1 - head) + (diskSize - 1) - servedRequests[n1];
+printf("Requests in the order they are served:\n");
+for (int i = 0; i < n; i++) {
+printf("%d ", servedRequests[i]);
+}
+}
+printf("\nTotal head movements: %d\n", totalHeadMovements);
+}
+int main() {
+int requests[] = {80, 150, 60, 135, 40, 35, 170};
+int n = sizeof(requests) / sizeof(requests[0]);
+int head, diskSize = 200;
+char direction;
+printf("Enter the starting head position: ");
+scanf("%d", &head);
+printf("Enter the direction (R for Right, L for Left): ");
+scanf(" %c", &direction);
+cscan(requests, n, head, diskSize, direction);
+return 0;
+}
